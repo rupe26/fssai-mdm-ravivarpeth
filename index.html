@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>शालेय पोषण आहार माहिती संकलन</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --background-color: #f4f7f6;
+            --form-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #cccccc;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--form-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+        .radio-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 30px;
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .success-message {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #c3e6cb;
+        }
+        #newSchoolContainer {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px dashed var(--primary-color);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>शालेय पोषण आहार व अन्न सुरक्षा माहिती</h2>
+    
+    <div id="successMessage" class="success-message">
+        माहिती यशस्वीरित्या जतन करण्यात आली आहे! (Data saved successfully in Google Sheets!)
+    </div>
+
+    <form id="nutritionForm" name="nutritionForm">
+        
+        <!-- School Dropdown -->
+        <div class="form-group">
+            <label for="schoolName">१. शाळेचे नाव आणि युडायस कोड (Select School)</label>
+            <select id="schoolName" name="schoolName" required onchange="toggleNewSchoolInput()">
+                <option value="">-- शाळा निवडा --</option>
+                <option value="27270101612 - सी.पी.एस. रविवार पेठ">27270101612 - सी.पी.एस. रविवार पेठ</option>
+                <option value="27270101613 - जि.प.प्रा.शा. क्र. २, अंबाजोगाई">27270101613 - जि.प.प्रा.शा. क्र. २, अंबाजोगाई</option>
+                <option value="27270102401 - जि.प.प्रा.शा. साकुड (मराठी)">27270102401 - जि.प.प्रा.शा. साकुड (मराठी)</option>
+                <option value="27270102404 - जि.प.प्रा.शा. साकुड (उर्दू)">27270102404 - जि.प.प्रा.शा. साकुड (उर्दू)</option>
+                <option value="27270102501 - जि.प.प्रा.शा. काळवटी तांडा क्र. १">27270102501 - जि.प.प्रा.शा. काळवटी तांडा क्र. १</option>
+                <option value="27270102502 - जि.प.प्रा.शा. काळवटी तांडा क्र. ३">27270102502 - जि.प.प्रा.शा. काळवटी तांडा क्र. ३</option>
+                <option value="27270102503 - जि.प.प्रा.शा. भीमाई वस्ती">27270102503 - जि.प.प्रा.शा. भीमाई वस्ती</option>
+                <option value="27270102601 - जि.प.प्रा.शा. काळवटी तांडा क्र. २">27270102601 - जि.प.प्रा.शा. काळवटी तांडा क्र. २</option>
+                <option value="27270102701 - जि.प.प्रा.शा. मांडवा पठाण">27270102701 - जि.प.प्रा.शा. मांडवा पठाण</option>
+                <option value="27270102801 - जि.प.प्रा.शा. मांडवा तांडा">27270102801 - जि.प.प्रा.शा. मांडवा तांडा</option>
+                <option value="27270102901 - जि.प.प्रा.शा. पोलेवाडी">27270102901 - जि.प.प्रा.शा. पोलेवाडी</option>
+                <option value="27270103001 - जि.प.प्रा.शा. नागझरी वसाहत">27270103001 - जि.प.प्रा.शा. नागझरी वसाहत</option>
+                <option value="27270103101 - जि.प.प्रा.शा. शेपवाडी">27270103101 - जि.प.प्रा.शा. शेपवाडी</option>
+                <option value="27270103102 - जि.प.प्रा.शा. सह्याद्री नगर शेपवाडी">27270103102 - जि.प.प्रा.शा. सह्याद्री नगर शेपवाडी</option>
+                <option value="27270103201 - जि.प.प्रा.शा. पिंपळा धायगुडा (मराठी)">27270103201 - जि.प.प्रा.शा. पिंपळा धायगुडा (मराठी)</option>
+                <option value="27270103203 - जि.प.प्रा.शा. पिंपळा धायगुडा (उर्दू)">27270103203 - जि.प.प्रा.शा. पिंपळा धायगुडा (उर्दू)</option>
+                <option value="27270103301 - जि.प.प्रा.शा. वरवटी">27270103301 - जि.प.प्रा.शा. वरवटी</option>
+                <option value="27270103303 - जि.प.प्रा.शा. उघडे वस्ती (वरवटी)">27270103303 - जि.प.प्रा.शा. उघडे वस्ती (वरवटी)</option>
+                <option value="27270103401 - जि.प.प्रा.शा. तलाव पाटी">27270103401 - जि.प.प्रा.शा. तलाव पाटी</option>
+                <option value="27270103501 - जि.प.प्रा.शा. अंबलवाडी">27270103501 - जि.प.प्रा.शा. अंबलवाडी</option>
+                <option value="27270103502 - जि.प.प्रा.शा. गोलटावस्ती">27270103502 - जि.प.प्रा.शा. गोलटावस्ती</option>
+                <option value="27270103701 - जि.प.प्रा.शा. गिरवली आपेट">27270103701 - जि.प.प्रा.शा. गिरवली आपेट</option>
+                <option value="27270103801 - जि.प.हा.स्कू. गिरवली">27270103801 - जि.प.हा.स्कू. गिरवली</option>
+                <!-- ADD NEW SCHOOL OPTION -->
+                <option value="other" style="font-weight:bold; color:var(--primary-color);">+ नवीन शाळा जोडा (Add New School)</option>
+            </select>
+        </div>
+
+        <!-- Hidden input for New School -->
+        <div id="newSchoolContainer" class="form-group">
+            <label for="newSchoolName">नवीन शाळेचे नाव आणि युडायस कोड टाइप करा:</label>
+            <input type="text" id="newSchoolName" name="newSchoolName" placeholder="उदा: 27270000000 - जि.प.प्रा.शा. नवीन गाव">
+        </div>
+
+        <div class="form-group">
+            <label>२. शाळेची FSSAI नोंदणी झाली आहे का?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="fssaiReg" value="होय" required> होय</label>
+                <label><input type="radio" name="fssaiReg" value="नाही"> नाही</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>३. ५० मीटर परिसरात HFSS विक्री करू नये बाबत फलक लावला आहे का?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="hfssBoard" value="होय" required> होय</label>
+                <label><input type="radio" name="hfssBoard" value="नाही"> नाही</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>४. शाळेत नोडल अधिकारी नियुक्ती केली आहे का?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="nodalOfficer" value="होय" required> होय</label>
+                <label><input type="radio" name="nodalOfficer" value="नाही"> नाही</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>५. शाळेत केंद्रीय स्वयंपाकगृह संस्था कार्यरत आहे का?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="centralKitchen" value="होय" required> होय</label>
+                <label><input type="radio" name="centralKitchen" value="नाही"> नाही</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>६. केंद्रीय स्वयंपाकगृहाने FSSAI परवाना घेतला आहे का?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="kitchenFssai" value="होय" required> होय</label>
+                <label><input type="radio" name="kitchenFssai" value="नाही"> नाही</label>
+                <label><input type="radio" name="kitchenFssai" value="लागू नाही"> लागू नाही</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="helpersCount">७. कार्यरत स्वयंपाकी मदतनीस संख्या:</label>
+            <input type="number" id="helpersCount" name="helpersCount" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label for="trainedHelpers">८. प्रशिक्षण पूर्ण केलेल्या स्वयंपाकी मदतनीसांची संख्या:</label>
+            <input type="number" id="trainedHelpers" name="trainedHelpers" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label>९. शाळा अन्न सुरक्षा जनजागृती सत्रात सहभागी झाली होती का?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="awareness" value="होय" required> होय</label>
+                <label><input type="radio" name="awareness" value="नाही"> नाही</label>
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn">माहिती सबमिट करा (Submit)</button>
+    </form>
+</div>
+
+<script>
+    // Google Apps Script URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxb6XdZCfauzX_XrYFWxYA37TWqSuJYTKKdpUdtVduU8-HKMnZaGqTEVYq8tRFUX8I/exec';
+    
+    const form = document.forms['nutritionForm'];
+    
+    // Function to show/hide the custom school input box
+    function toggleNewSchoolInput() {
+        var schoolSelect = document.getElementById("schoolName");
+        var newSchoolContainer = document.getElementById("newSchoolContainer");
+        var newSchoolInput = document.getElementById("newSchoolName");
+        
+        if (schoolSelect.value === "other") {
+            newSchoolContainer.style.display = "block";
+            newSchoolInput.required = true;
+        } else {
+            newSchoolContainer.style.display = "none";
+            newSchoolInput.required = false;
+            newSchoolInput.value = ""; // Clear it if they change their mind
+        }
+    }
+
+    // Function to handle sending data to Google Sheets
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        
+        const btn = document.getElementById('submitBtn');
+        const originalText = btn.innerText;
+        btn.innerText = "माहिती पाठवत आहे... (Submitting...)";
+        btn.disabled = true;
+
+        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(response => {
+                const successMsg = document.getElementById('successMessage');
+                successMsg.style.display = 'block';
+                window.scrollTo(0, 0); // Scroll to top to see message
+                
+                form.reset(); // Clear the form
+                toggleNewSchoolInput(); // Reset the custom school field visibility
+                
+                btn.innerText = originalText;
+                btn.disabled = false;
+                
+                // Hide success message after 5 seconds
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 5000);
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                alert("इंटरनेट समस्या किंवा स्क्रिप्ट एरर. माहिती जतन झाली नाही. (Error submitting data.)");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+    });
+</script>
+
+</body>
+</html>
