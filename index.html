@@ -10,7 +10,6 @@
             --bg-color: #f4f7f6;
             --table-border: #dee2e6;
             --success-color: #28a745;
-            --print-color: #17a2b8;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -74,12 +73,6 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(0,86,179,0.2);
         }
-        
-        /* Styles for print output */
-        .print-value {
-            display: none;
-        }
-
         .total-row {
             background-color: #e9ecef;
             font-weight: bold;
@@ -88,16 +81,12 @@
             font-size: 16px;
             color: var(--primary-color);
         }
-        
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
+        .btn-submit {
+            display: block;
+            width: 200px;
             margin: 20px auto;
-        }
-        
-        .btn {
-            padding: 12px 24px;
+            padding: 12px;
+            background-color: var(--success-color);
             color: white;
             border: none;
             border-radius: 5px;
@@ -105,1183 +94,976 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: background-color 0.3s;
         }
-        
-        .btn-submit { background-color: var(--success-color); }
-        .btn-submit:hover { background-color: #218838; }
-        
-        .btn-print { background-color: var(--print-color); }
-        .btn-print:hover { background-color: #138496; }
-
-        /* Print Specific Styles */
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 15mm 10mm;
-            }
-            body {
-                background-color: white;
-                padding: 0;
-            }
-            .header-container, .table-responsive {
-                box-shadow: none;
-            }
-            .button-group {
-                display: none;
-            }
-            select, input[type="number"] {
-                display: none;
-            }
-            .print-value {
-                display: inline;
-                font-weight: bold;
-            }
-            th {
-                position: static;
-                color: black !important;
-                background-color: #f8f9fa !important;
-                -webkit-print-color-adjust: exact;
-            }
-            
-            /* TRICK TO SHOW FOOTER ONLY ON LAST PAGE */
-            table {
-                page-break-inside: auto;
-            }
-            tr {
-                page-break-inside: avoid;
-                page-break-after: auto;
-            }
-            /* By default HTML tables print footers on every page. We change it to a normal row group behavior so it just follows the last row. */
-            tfoot {
-                display: table-row-group; 
-            }
-            
-            .total-row td {
-                color: black !important;
-                background-color: #e9ecef !important;
-                -webkit-print-color-adjust: exact;
-            }
+        .btn-submit:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
 
-    <div id="content-to-print">
-        <div class="header-container">
-            <h2>अन्न सुरक्षा व मानके विनियम अंमलबजावणी अहवाल</h2>
-            <p id="instruction-text">सर्व शाळांची माहिती खालील तक्त्यामध्ये भरा. (Fill in the details for all schools below)</p>
-        </div>
-
-        <div class="table-responsive">
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th style="width: 4%;">अ.क्र</th>
-                        <th style="width: 8%;">तालुका</th>
-                        <th style="width: 20%;">योजनेस पात्र शाळा</th>
-                        <th style="width: 11%;">FSSAI नोंदणी / परवाना</th>
-                        <th style="width: 13%;">५० मी. परिसरात HFSS बंदी फलक</th>
-                        <th style="width: 11%;">नोडल अधिकारी नियुक्ती</th>
-                        <th style="width: 11%;">स्वयंपाकी मदतनीस कार्यरत संख्या</th>
-                        <th style="width: 11%;">स्वयंपाकी मदतनीस प्रशिक्षण घेतलेली संख्या</th>
-                        <th style="width: 11%;">जनजागृती सत्रात सहभागी</th>
-                    </tr>
-                </thead>
-                <tbody>
-
-                    <tr>
-                        <td>1</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270101612 - सी.पी.एस. रविवार पेठ</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>2</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270101613 - जि.प.प्रा.शा. क्र. २, अंबाजोगाई</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>3</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270102401 - जि.प.प्रा.शा. साकुड (मराठी)</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>4</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270102404 - जि.प.प्रा.शा. साकुड (उर्दू)</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>5</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270102501 - जि.प.प्रा.शा. काळवटी तांडा क्र. १</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>6</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270102502 - जि.प.प्रा.शा. काळवटी तांडा क्र. ३</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>7</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270102503 - जि.प.प्रा.शा. भीमाई वस्ती</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>8</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270102601 - जि.प.प्रा.शा. काळवटी तांडा क्र. २</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>9</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270102701 - जि.प.प्रा.शा. मांडवा पठाण</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>10</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270102801 - जि.प.प्रा.शा. मांडवा तांडा</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>11</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270102901 - जि.प.प्रा.शा. पोलेवाडी</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>12</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103001 - जि.प.प्रा.शा. नागझरी वसाहत</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>13</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103101 - जि.प.प्रा.शा. शेपवाडी</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>14</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103102 - जि.प.प्रा.शा. सह्याद्री नगर शेपवाडी</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>15</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103201 - जि.प.प्रा.शा. पिंपळा धायगुडा (मराठी)</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>16</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103203 - जि.प.प्रा.शा. पिंपळा धायगुडा (उर्दू)</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>17</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103301 - जि.प.प्रा.शा. वरवटी</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>18</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103303 - जि.प.प्रा.शा. उघडे वस्ती (वरवटी)</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>19</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103401 - जि.प.प्रा.शा. तलाव पाटी</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>20</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103501 - जि.प.प्रा.शा. अंबलवाडी</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>21</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103502 - जि.प.प्रा.शा. गोलटावस्ती</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>22</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103701 - जि.प.प्रा.शा. गिरवली आपेट</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>23</td>
-                        <td>अंबाजोगाई</td>
-                        <td class="school-name">27270103801 - जि.प.हा.स्कू. गिरवली</td>
-                        <td>
-                            <select class="calc-yesno fssai input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno hfss input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno nodal input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num working-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <input type="number" class="calc-num trained-cooks input-element" min="0" oninput="calculateTotals(); updatePrintValue(this)">
-                            <span class="print-value"></span>
-                        </td>
-                        <td>
-                            <select class="calc-yesno awareness input-element" onchange="calculateTotals(); updatePrintValue(this)">
-                                <option value="">-निवडा-</option>
-                                <option value="1">होय</option>
-                                <option value="0">नाही</option>
-                            </select>
-                            <span class="print-value"></span>
-                        </td>
-                    </tr>
-
-                </tbody>
-                <tfoot>
-                    <tr class="total-row">
-                        <td colspan="3" style="text-align: right; padding-right: 20px;">एकूण (Total)</td>
-                        <td id="total-fssai">0</td>
-                        <td id="total-hfss">0</td>
-                        <td id="total-nodal">0</td>
-                        <td id="total-working-cooks">0</td>
-                        <td id="total-trained-cooks">0</td>
-                        <td id="total-awareness">0</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+    <div class="header-container">
+        <h2>अन्न सुरक्षा व मानके विनियम अंमलबजावणी अहवाल</h2>
+        <p>सर्व शाळांची माहिती खालील तक्त्यामध्ये भरा. (Fill in the details for all schools below)</p>
     </div>
 
-    <div class="button-group">
-        <button class="btn btn-submit" onclick="submitData()">माहिती जतन करा (Save)</button>
-        <button class="btn btn-print" onclick="generatePDF()">PDF डाउनलोड करा / प्रिंट करा (Print/PDF)</button>
+    <div class="table-responsive">
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th style="width: 4%;">अ.क्र</th>
+                    <th style="width: 8%;">तालुका</th>
+                    <th style="width: 20%;">योजनेस पात्र शाळा</th>
+                    <th style="width: 11%;">FSSAI नोंदणी / परवाना</th>
+                    <th style="width: 13%;">५० मी. परिसरात HFSS बंदी फलक</th>
+                    <th style="width: 11%;">नोडल अधिकारी नियुक्ती</th>
+                    <th style="width: 11%;">स्वयंपाकी मदतनीस कार्यरत संख्या</th>
+                    <th style="width: 11%;">स्वयंपाकी मदतनीस प्रशिक्षण घेतलेली संख्या</th>
+                    <th style="width: 11%;">जनजागृती सत्रात सहभागी</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>1</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270101612 - सी.पी.एस. रविवार पेठ</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270101613 - जि.प.प्रा.शा. क्र. २, अंबाजोगाई</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>3</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270102401 - जि.प.प्रा.शा. साकुड (मराठी)</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>4</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270102404 - जि.प.प्रा.शा. साकुड (उर्दू)</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>5</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270102501 - जि.प.प्रा.शा. काळवटी तांडा क्र. १</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>6</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270102502 - जि.प.प्रा.शा. काळवटी तांडा क्र. ३</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>7</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270102503 - जि.प.प्रा.शा. भीमाई वस्ती</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>8</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270102601 - जि.प.प्रा.शा. काळवटी तांडा क्र. २</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>9</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270102701 - जि.प.प्रा.शा. मांडवा पठाण</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>10</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270102801 - जि.प.प्रा.शा. मांडवा तांडा</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>11</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270102901 - जि.प.प्रा.शा. पोलेवाडी</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>12</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103001 - जि.प.प्रा.शा. नागझरी वसाहत</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>13</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103101 - जि.प.प्रा.शा. शेपवाडी</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>14</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103102 - जि.प.प्रा.शा. सह्याद्री नगर शेपवाडी</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>15</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103201 - जि.प.प्रा.शा. पिंपळा धायगुडा (मराठी)</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>16</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103203 - जि.प.प्रा.शा. पिंपळा धायगुडा (उर्दू)</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>17</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103301 - जि.प.प्रा.शा. वरवटी</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>18</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103303 - जि.प.प्रा.शा. उघडे वस्ती (वरवटी)</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>19</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103401 - जि.प.प्रा.शा. तलाव पाटी</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>20</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103501 - जि.प.प्रा.शा. अंबलवाडी</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>21</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103502 - जि.प.प्रा.शा. गोलटावस्ती</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>22</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103701 - जि.प.प्रा.शा. गिरवली आपेट</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>23</td>
+                    <td>अंबाजोगाई</td>
+                    <td class="school-name">27270103801 - जि.प.हा.स्कू. गिरवली</td>
+                    <td>
+                        <select class="calc-yesno fssai" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno hfss" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="calc-yesno nodal" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num working-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 2">
+                    </td>
+                    <td>
+                        <input type="number" class="calc-num trained-cooks" min="0" oninput="calculateTotals()" placeholder="उदा. 1">
+                    </td>
+                    <td>
+                        <select class="calc-yesno awareness" onchange="calculateTotals()">
+                            <option value="">-निवडा-</option>
+                            <option value="1">होय</option>
+                            <option value="0">नाही</option>
+                        </select>
+                    </td>
+                </tr>
+
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="3" style="text-align: right; padding-right: 20px;">एकूण (Total)</td>
+                    <td id="total-fssai">0</td>
+                    <td id="total-hfss">0</td>
+                    <td id="total-nodal">0</td>
+                    <td id="total-working-cooks">0</td>
+                    <td id="total-trained-cooks">0</td>
+                    <td id="total-awareness">0</td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
+
+    <button class="btn-submit" onclick="submitData()">माहिती जतन करा (Save)</button>
 
     <script>
-        function updatePrintValue(element) {
-            let printSpan = element.nextElementSibling;
-            if(element.tagName === "SELECT") {
-                if(element.value === "1") printSpan.innerText = "होय";
-                else if(element.value === "0") printSpan.innerText = "नाही";
-                else printSpan.innerText = "-";
-            } else {
-                printSpan.innerText = element.value || "-";
-            }
-        }
-
         function calculateTotals() {
+            // Helper function to sum dropdowns (Yes = 1)
             function sumYesNo(className) {
                 let sum = 0;
                 let elements = document.querySelectorAll('.' + className);
@@ -1293,6 +1075,7 @@
                 return sum;
             }
 
+            // Helper function to sum number inputs
             function sumNumbers(className) {
                 let sum = 0;
                 let elements = document.querySelectorAll('.' + className);
@@ -1305,11 +1088,13 @@
                 return sum;
             }
 
+            // Calculate and display YES/NO counts
             document.getElementById('total-fssai').innerText = sumYesNo('fssai');
             document.getElementById('total-hfss').innerText = sumYesNo('hfss');
             document.getElementById('total-nodal').innerText = sumYesNo('nodal');
             document.getElementById('total-awareness').innerText = sumYesNo('awareness');
 
+            // Calculate and display NUMBER counts
             document.getElementById('total-working-cooks').innerText = sumNumbers('working-cooks');
             document.getElementById('total-trained-cooks').innerText = sumNumbers('trained-cooks');
         }
@@ -1317,15 +1102,6 @@
         function submitData() {
             alert("माहिती जतन करण्याची प्रक्रिया यशस्वी झाली! (Data submission logic can be connected here.)");
         }
-
-        function generatePDF() {
-            window.print();
-        }
-        
-        // Initialize print values on load
-        document.querySelectorAll('.input-element').forEach(el => {
-             updatePrintValue(el);
-        });
     </script>
 </body>
 </html>
