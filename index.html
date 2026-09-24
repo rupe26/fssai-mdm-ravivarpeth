@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>अन्न सुरक्षा व मानके विनियम अंमलबजावणी अहवाल - Web App</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         :root {
             --primary-color: #0056b3;
@@ -117,6 +116,10 @@
 
         /* Print Specific Styles */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 15mm 10mm;
+            }
             body {
                 background-color: white;
                 padding: 0;
@@ -140,6 +143,20 @@
                 background-color: #f8f9fa !important;
                 -webkit-print-color-adjust: exact;
             }
+            
+            /* TRICK TO SHOW FOOTER ONLY ON LAST PAGE */
+            table {
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            /* By default HTML tables print footers on every page. We change it to a normal row group behavior so it just follows the last row. */
+            tfoot {
+                display: table-row-group; 
+            }
+            
             .total-row td {
                 color: black !important;
                 background-color: #e9ecef !important;
@@ -1302,37 +1319,7 @@
         }
 
         function generatePDF() {
-            // Option 1: Browser Print (which allows saving to PDF natively)
             window.print();
-            
-            /* Option 2: Using html2pdf library (commented out window.print() if you want to force direct PDF download instead)
-            
-            // Hide instruction text for PDF
-            document.getElementById('instruction-text').style.display = 'none';
-            
-            // Prepare inputs for printing by showing spans
-            const inputs = document.querySelectorAll('.input-element');
-            const spans = document.querySelectorAll('.print-value');
-            
-            inputs.forEach(el => el.style.display = 'none');
-            spans.forEach(el => el.style.display = 'inline');
-
-            const element = document.getElementById('content-to-print');
-            const opt = {
-                margin:       10,
-                filename:     'School_Nutrition_Report.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Restore UI
-                inputs.forEach(el => el.style.display = '');
-                spans.forEach(el => el.style.display = 'none');
-                document.getElementById('instruction-text').style.display = '';
-            });
-            */
         }
         
         // Initialize print values on load
