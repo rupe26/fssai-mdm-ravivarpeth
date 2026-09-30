@@ -2,104 +2,102 @@
 <html lang="mr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PM Poshan Data Update - Ambajogai</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SheetJS for Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gray-50 min-h-screen font-sans text-gray-800">
 
-    <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 mt-10">
+    <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 mt-4 sm:mt-10">
         
         <!-- Header -->
-        <div class="flex justify-end mb-2">
-            <button id="adminLoginBtn" class="text-sm text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-1">
+        <div class="flex justify-end mb-2 pr-1">
+            <button id="adminLoginBtn" class="text-sm text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-1 p-2 -mr-2 rounded-lg">
                 ⚙️ Admin
             </button>
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden relative">
-            <div class="bg-blue-600 px-6 py-4 flex justify-between items-center">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden relative border border-gray-100">
+            <div class="bg-blue-600 px-5 py-5 sm:px-6 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                 <div>
-                    <h1 class="text-xl font-bold text-white">PM Poshan - Missing Data Collection</h1>
-                    <p class="text-blue-100 text-sm">Block: Ambajogai (अंबाजोगाई)</p>
+                    <h1 class="text-lg sm:text-xl font-bold text-white leading-tight">PM Poshan Data Collection</h1>
+                    <p class="text-blue-100 text-sm mt-1">Block: Ambajogai (अंबाजोगाई)</p>
                 </div>
             </div>
 
-            <div class="p-6">
+            <div class="p-5 sm:p-6">
                 <!-- Search Section -->
                 <div class="mb-6" id="searchSection">
-                    <label for="udiseSearch" class="block text-sm font-medium text-gray-700 mb-1">Enter UDISE Number (यु-डायस क्रमांक)</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="udiseSearch" class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g., 27270101612">
-                        <button id="searchBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">Search</button>
+                    <label for="udiseSearch" class="block text-sm font-semibold text-gray-700 mb-2">Enter UDISE Number (यु-डायस क्रमांक)</label>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="tel" id="udiseSearch" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 sm:py-2 focus:ring-2 focus:ring-blue-500 outline-none text-base" placeholder="e.g., 27270101612">
+                        <button id="searchBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 sm:py-2 rounded-lg font-medium transition-colors shadow-sm w-full sm:w-auto">Search</button>
                     </div>
                     <p id="searchMessage" class="text-sm mt-2 hidden"></p>
                 </div>
 
                 <!-- Admin Dashboard (Hidden by default) -->
-                <div id="adminDashboard" class="hidden mb-6 bg-gray-100 p-4 rounded-lg border border-gray-200">
+                <div id="adminDashboard" class="hidden mb-6 bg-gray-50 p-4 sm:p-5 rounded-lg border border-gray-200 shadow-inner">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-lg font-bold text-gray-800">Admin Dashboard</h2>
-                        <button id="closeAdminBtn" class="text-gray-500 hover:text-red-500 font-bold">✕</button>
+                        <button id="closeAdminBtn" class="text-gray-400 hover:text-red-500 font-bold p-2 text-xl leading-none">&times;</button>
                     </div>
                     
-                    <div class="space-y-4">
-                        <button id="downloadExcelBtn" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    <div class="space-y-5">
+                        <button id="downloadExcelBtn" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition-colors shadow-sm">
                             📥 Download Updated Excel Data
                         </button>
 
                         <div class="border-t border-gray-300 pt-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Unlock/Reset School Data</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="adminUdiseReset" class="flex-1 border border-gray-300 rounded-lg px-4 py-2" placeholder="UDISE to unlock">
-                                <button id="resetUdiseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium">Unlock</button>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Unlock/Reset School Data</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="tel" id="adminUdiseReset" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 sm:py-2 text-base" placeholder="UDISE to unlock">
+                                <button id="resetUdiseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 sm:py-2 rounded-lg font-medium shadow-sm w-full sm:w-auto">Unlock</button>
                             </div>
                             <p id="adminMessage" class="text-sm mt-2 hidden"></p>
                         </div>
                     </div>
                 </div>
 
-                <hr class="border-gray-200 mb-6" id="divider">
+                <hr class="border-gray-200 mb-6 hidden" id="divider">
 
                 <!-- Data Form Section -->
-                <form id="dataForm" class="hidden space-y-4">
+                <form id="dataForm" class="hidden space-y-5">
                     <input type="hidden" id="recordKey">
                     
-                    <div id="lockedBadge" class="hidden bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded border border-yellow-200 inline-block mb-2">
-                        🔒 Data Submitted & Locked
+                    <div id="lockedBadge" class="hidden bg-yellow-50 text-yellow-800 text-sm font-medium px-4 py-2 rounded-md border border-yellow-200 flex items-center gap-2 mb-2">
+                        <span>🔒</span> Data Submitted & Locked
                     </div>
 
                     <div>
-                        <!-- Removed readonly and added form-input class so it locks automatically -->
-                        <label class="block text-sm font-medium text-gray-700">School Name</label>
-                        <input type="text" id="schoolName" class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none form-input">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">School Name</label>
+                        <input type="text" id="schoolName" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none text-base form-input shadow-sm">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Headmaster Name (मुख्याध्यापकाचे नाव)</label>
-                        <input type="text" id="hmName" class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none form-input">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Headmaster Name (मुख्याध्यापकाचे नाव)</label>
+                        <input type="text" id="hmName" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none text-base form-input shadow-sm">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Mobile Number (मोबाईल क्रमांक)</label>
-                        <input type="text" id="hmMobile" class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none form-input">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Mobile Number (मोबाईल क्रमांक)</label>
+                        <input type="tel" id="hmMobile" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none text-base form-input shadow-sm">
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">TAN</label>
-                            <input type="text" id="tan" class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none uppercase form-input">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">TAN</label>
+                            <input type="text" id="tan" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none uppercase text-base form-input shadow-sm">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">PAN</label>
-                            <input type="text" id="pan" class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none uppercase form-input">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">PAN</label>
+                            <input type="text" id="pan" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none uppercase text-base form-input shadow-sm">
                         </div>
                     </div>
 
                     <div class="pt-4" id="submitContainer">
-                        <button type="submit" id="updateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-bold text-lg transition-colors shadow-sm">
+                        <button type="submit" id="updateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-4 rounded-lg font-bold text-lg transition-colors shadow-md active:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
                             Submit & Lock Data
                         </button>
                     </div>
@@ -121,12 +119,13 @@
         const db = getDatabase(app);
         const dbRef = ref(db);
 
-        const ADMIN_PIN = "2026"; // Change this to your desired PIN
+        const ADMIN_PIN = "2026"; 
 
         // UI Elements
         const searchBtn = document.getElementById('searchBtn');
         const udiseSearch = document.getElementById('udiseSearch');
         const searchMessage = document.getElementById('searchMessage');
+        const divider = document.getElementById('divider');
         
         const dataForm = document.getElementById('dataForm');
         const formInputs = document.querySelectorAll('.form-input');
@@ -170,6 +169,7 @@
             searchBtn.textContent = 'Searching...';
             searchMessage.classList.add('hidden');
             dataForm.classList.add('hidden');
+            divider.classList.add('hidden');
 
             try {
                 const result = await findRecordByUdise(searchValue);
@@ -177,7 +177,6 @@
                 if (result) {
                     const { key, record } = result;
                     
-                    // Populate Form
                     recordKeyField.value = key;
                     schoolNameField.value = record.s || '';
                     hmNameField.value = record.h || '';
@@ -185,24 +184,27 @@
                     tanField.value = record.t === '0' ? '' : record.t;
                     panField.value = record.p === '0' ? '' : record.p;
                     
-                    // Handle Locked State
                     if (record.l === 1) {
                         formInputs.forEach(input => {
                             input.readOnly = true;
-                            input.classList.add('bg-gray-100', 'cursor-not-allowed', 'text-gray-500');
+                            input.classList.add('bg-gray-100', 'text-gray-500', 'border-gray-200');
                         });
                         submitContainer.classList.add('hidden');
                         lockedBadge.classList.remove('hidden');
                     } else {
                         formInputs.forEach(input => {
                             input.readOnly = false;
-                            input.classList.remove('bg-gray-100', 'cursor-not-allowed', 'text-gray-500');
+                            input.classList.remove('bg-gray-100', 'text-gray-500', 'border-gray-200');
                         });
                         submitContainer.classList.remove('hidden');
                         lockedBadge.classList.add('hidden');
                     }
                     
+                    divider.classList.remove('hidden');
                     dataForm.classList.remove('hidden');
+                    // Scroll down to form on mobile
+                    dataForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
                 } else {
                     showMessage(searchMessage, 'UDISE number not found.', 'text-red-600');
                 }
@@ -223,18 +225,21 @@
             updateBtn.disabled = true;
 
             const updates = {};
-            updates['/' + key + '/s'] = schoolNameField.value.trim(); // Saving the editable School Name
+            updates['/' + key + '/s'] = schoolNameField.value.trim();
             updates['/' + key + '/h'] = hmNameField.value.trim();
             updates['/' + key + '/m'] = hmMobileField.value.trim();
             updates['/' + key + '/t'] = tanField.value.trim().toUpperCase() || '0';
             updates['/' + key + '/p'] = panField.value.trim().toUpperCase() || '0';
-            updates['/' + key + '/l'] = 1; // Set Lock Flag
+            updates['/' + key + '/l'] = 1;
 
             try {
                 await update(dbRef, updates);
                 showMessage(searchMessage, 'Data submitted and locked successfully!', 'text-green-600');
                 dataForm.classList.add('hidden');
+                divider.classList.add('hidden');
                 udiseSearch.value = '';
+                // Scroll back to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
                 showMessage(searchMessage, 'Failed to save data. Check rules.', 'text-red-600');
             } finally {
@@ -249,6 +254,7 @@
                 const pin = prompt("Enter Admin PIN:");
                 if (pin === ADMIN_PIN) {
                     adminDashboard.classList.remove('hidden');
+                    adminDashboard.scrollIntoView({ behavior: 'smooth' });
                 } else if (pin !== null) {
                     alert("Incorrect PIN");
                 }
@@ -260,7 +266,6 @@
             adminMessage.classList.add('hidden');
         });
 
-        // Download Excel
         downloadExcelBtn.addEventListener('click', async () => {
             downloadExcelBtn.textContent = "Generating...";
             try {
@@ -269,7 +274,6 @@
                     const data = snapshot.val();
                     const exportData = [];
 
-                    // Transform compressed keys to readable headers
                     for (const record of Object.values(data)) {
                         exportData.push({
                             "UDISE CODE": record.u || "",
@@ -282,12 +286,9 @@
                         });
                     }
 
-                    // Create Worksheet and Workbook
                     const ws = XLSX.utils.json_to_sheet(exportData);
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, "Ambajogai_Data");
-                    
-                    // Trigger Download
                     XLSX.writeFile(wb, "PM_POSHAN_Updated_Data.xlsx");
                 }
             } catch (error) {
@@ -298,7 +299,6 @@
             }
         });
 
-        // Reset / Unlock Record
         resetUdiseBtn.addEventListener('click', async () => {
             const udiseToReset = adminUdiseReset.value.trim();
             if (!udiseToReset) return;
@@ -307,7 +307,6 @@
             try {
                 const result = await findRecordByUdise(udiseToReset);
                 if (result) {
-                    // Update only the lock flag to 0
                     await update(dbRef, { ['/' + result.key + '/l']: 0 });
                     showMessage(adminMessage, `UDISE ${udiseToReset} is now unlocked!`, 'text-green-600');
                     adminUdiseReset.value = '';
