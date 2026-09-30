@@ -22,7 +22,7 @@
         <div class="bg-white rounded-xl shadow-lg overflow-hidden relative">
             <div class="bg-blue-600 px-6 py-4 flex justify-between items-center">
                 <div>
-                    <h1 class="text-xl font-bold text-white">PM Poshan - MDM Data Collection</h1>
+                    <h1 class="text-xl font-bold text-white">PM Poshan - Missing Data Collection</h1>
                     <p class="text-blue-100 text-sm">Block: Ambajogai (अंबाजोगाई)</p>
                 </div>
             </div>
@@ -72,8 +72,9 @@
                     </div>
 
                     <div>
+                        <!-- Removed readonly and added form-input class so it locks automatically -->
                         <label class="block text-sm font-medium text-gray-700">School Name</label>
-                        <input type="text" id="schoolName" readonly class="mt-1 w-full border border-gray-200 bg-gray-100 text-gray-600 rounded-lg px-4 py-2 cursor-not-allowed">
+                        <input type="text" id="schoolName" class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none form-input">
                     </div>
 
                     <div>
@@ -222,6 +223,7 @@
             updateBtn.disabled = true;
 
             const updates = {};
+            updates['/' + key + '/s'] = schoolNameField.value.trim(); // Saving the editable School Name
             updates['/' + key + '/h'] = hmNameField.value.trim();
             updates['/' + key + '/m'] = hmMobileField.value.trim();
             updates['/' + key + '/t'] = tanField.value.trim().toUpperCase() || '0';
